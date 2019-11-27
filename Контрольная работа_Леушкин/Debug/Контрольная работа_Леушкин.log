@@ -1,0 +1,8 @@
+﻿  Source.cpp
+C:\Users\KOMBAT\source\repos\Контрольная работа_Леушкин\Source.cpp(24,20): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\KOMBAT\source\repos\Контрольная работа_Леушкин\Source.cpp(27,21): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\KOMBAT\source\repos\Контрольная работа_Леушкин\Source.cpp(34,20): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\KOMBAT\source\repos\Контрольная работа_Леушкин\Source.cpp(36,21): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\KOMBAT\source\repos\Контрольная работа_Леушкин\Source.cpp(213,7): warning C4101: c: неиспользованная локальная переменная
+C:\Users\KOMBAT\source\repos\Контрольная работа_Леушкин\Source.cpp(205): warning C4715: menu_inter: значение возвращается не при всех путях выполнения
+  Контрольная работа_Леушкин.vcxproj -> C:\Users\KOMBAT\source\repos\Контрольная работа_Леушкин\Debug\Контрольная работа_Леушкин.exe
