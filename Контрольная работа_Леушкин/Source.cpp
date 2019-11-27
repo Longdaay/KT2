@@ -226,7 +226,7 @@ void say_hello()
 }
 void print_array(vector<int> arr)
 {
-	cout << endl << " Матрица " << endl;
+	cout << endl << "__Массив__" << endl;
 	for (int i = 0; i < arr.size(); i++)
 		cout << arr[i] << " ";
 	cout << endl;
@@ -236,7 +236,7 @@ void fill_random_mat(vector<int>& arr) // функция для рандомного заполнения матр
 	srand(time(0));
 	for (int i = 0; i < arr.size(); i++)
 	{
-		arr[i] = rand() % 20; // рандомим значения кратные 20
+		arr[i] = rand() % 50; // рандомим значения кратные 20
 	}
 }
 void fill_mat(vector<int>& arr) // функция для ручного заполнения матрицы в зависимости от размерности
@@ -306,16 +306,206 @@ void choosefill(vector<int>& arr) // функция выбора заполнения матрицы
 		choosefill(arr);
 	}
 }
+
+void swap(int* first_p, int* second_p)
+{
+	int temp = *first_p;
+	*first_p = *second_p;
+	*second_p = temp;
+}
+
+void BubbleSort(vector<int>& arr)
+{
+	int temp;
+	for (int i = 0; i < arr.size() - 1; i++)
+		for (int j = 0; j < arr.size() - 1; j++)
+			if (arr[j] > arr[j + 1])
+			{
+				swap(arr[j], arr[j + 1]); // меняем местами, если искомое значение больше следующего 
+			}
+}
+
+void ShakerSort(vector<int>& arr)
+{
+	int i, j, k;
+	int m = arr.size();
+	for (i = 0; i < m;) {
+		for (j = i + 1; j < m; j++) {
+			if (arr[j] < arr[j - 1])
+				swap(arr[j], arr[j - 1]);
+		}
+		m--;
+		for (k = m - 1; k > i; k--) {
+			if (arr[k] < arr[k - 1])
+				swap(arr[k], arr[k - 1]);
+		}
+		i++;
+	}
+}
+
+int getNextGap(int gap)
+{
+	// Shrink gap by Shrink factor 
+	gap = (gap * 10) / 13;
+
+	if (gap < 1)
+		return 1;
+	return gap;
+}
+
+void CombSort(vector<int>& arr)
+{
+	int gap = arr.size();
+
+	// Initialize swapped as true to make sure that 
+	// loop runs 
+	bool swapped = true;
+
+	// Keep running while gap is more than 1 and last 
+	// iteration caused a swap 
+	while (gap != 1 || swapped == true)
+	{
+		// Find next gap 
+		gap = getNextGap(gap);
+
+		// Initialize swapped as false so that we can 
+		// check if swap happened or not 
+		swapped = false;
+
+		// Compare all elements with current gap 
+		for (int i = 0; i < arr.size() - gap; i++)
+		{
+			if (arr[i] > arr[i + gap])
+			{
+				swap(arr[i], arr[i + gap]);
+				swapped = true;
+			}
+		}
+	}
+}
+
+void InsertSort(vector<int>& arr)
+{
+	// сортируем массив вставками --  insertion sort
+	int min_value;	// переменная, принимающая минимальное значение минимальное значение
+	int j = 0; // объявление переменной, котороая используется для выбора иного от i элемента массива
+	for (int i = 1; i < arr.size(); i++)
+	{
+		min_value = arr[i]; // задаем текущему минимальному значению массива текущий элемент массива
+		j = i - 1; // задаем значение j на 1 меньше, чем i, для того, чтобы работать с предыдушем элементом массива 
+		while (j >= 0 and arr[j] > min_value) //пока текущий элемент меньше предыдущего и j не присвоилось
+		{									// отрицательное значение, присваиваем последнему значению предыдущее 
+			arr[j + 1] = arr[j];
+			j = j - 1;
+		}
+		arr[j + 1] = min_value; // присваеваем следующему элементу минимальное значения массива
+	}
+}
+
+int partition(vector<int> &arr, int low, int high)
+{
+	int pivot = arr[high];    // pivot
+	int i = (low - 1);
+	for (int j = low; j <= high - 1; j++)
+	{
+		//if current element is smaller than pivot, increment the low element
+		//swap elements at i and j
+		if (arr[j] <= pivot)
+		{
+			i++;    // increment index of smaller element
+			swap(arr[i], arr[j]);
+		}
+	}
+	swap(arr[i + 1], arr[high]);
+	return (i + 1);
+}
+
+void QuickSort(vector<int>& arr, int low, int high)
+{
+	if (low < high)
+	{
+	//partition the array
+		int pivot = partition(arr, low, high);
+
+		//sort the sub arrays independently
+		QuickSort(arr, low, pivot - 1);
+		QuickSort(arr, pivot + 1, high);
+	}
+}
+
+void choosesort(vector<int>& arr)
+{
+	int m;
+	char value[256]; // переменная, которая хранит выбранное значение
+	cin >> value; // считываем выбранное значение
+	if (strlen(value) == 1) // проверяем количество введенных символов. Если много, то просим ввести еще раз, иначе проверям дальше
+	{
+		switch (value[0]) // проверям, взяв первый символ переменной value
+		{
+		case '1': // сортировка пузырьком
+			BubbleSort(arr);
+			print_array(arr);
+			break;
+
+		case '2': // сортировка шейкерная
+			ShakerSort(arr);
+			print_array(arr);
+			break;
+		case '3': // сортировка комбинированием
+			CombSort(arr);
+			print_array(arr);
+			break;
+		case '4': // сортировка вставками
+			InsertSort(arr);
+			print_array(arr);
+			break;
+		case '5': // сортировка быстрая
+			QuickSort(arr, 0, arr.size() - 1);
+			print_array(arr);
+			break;
+		default: // если число не подходит ни к одному из
+			cout << "Число введено неверно. Введите заново" << endl;
+			choosefill(arr);
+		}
+	}
+	else // если введено символов больше необходимого
+	{
+		cout << "Необходимо ввести один символ. Попробуйте ввести заново" << endl;
+		choosefill(arr);
+	}
+}
+int fib(int digit)
+{
+	int f1 = 1, f2 = 1, it = 2;
+	while (f2 < digit) {
+		int tmp = f2;
+		f2 += f1;
+		f1 = tmp;
+		it++;
+	}
+	if (f2 == digit)
+		return 1;
+	else
+		return -1;
+}
 void work_array()
 {
 	system("cls");
 	vector<int> arr;
+	vector<int> arr_fib;
+	int size;
 	int n;
+	int middle, middle_i, med, mod;
+	int tmp;
+	int res = 0;
+	int max_index = 0;
+	int max_value = 0;
+
 	cout << "__Работа с целочисленным массивом__" << endl << endl;
 	cout << "Введите размерность массива (положительное число арабскими цифрами - пример: 10, 3, 5): ";
 	n = checkdigit();
 	arr.resize(n);
-	cout << "Как вы хотите заполнить данный массив:" << endl;
+	cout << "Как Вы хотите заполнить данный массив:" << endl;
 	cout << "1 - Значения элементов будут заданы рандомно (кратны 20)" << endl;
 	cout << "2 - Самостоятельно заполнить значения элементов массива" << endl;
 	cout << "3 - Загрузить массив с помощью текстового файла (размерность массива в файле должна совпадать с указанной Вами размерностью)" << endl << endl;
@@ -323,6 +513,60 @@ void work_array()
 
 	choosefill(arr); // функция для выбора варианта заполнения массива
 
+	cout << "Какой сортировкой Вы хотите отсортировать данный массив:" << endl;
+	cout << "1 - Bubble Sort" << endl;
+	cout << "2 - Shaker Sort" << endl;
+	cout << "3 - Comb Sort" << endl;
+	cout << "4 - Insert Sort" << endl;
+	cout << "5 - Quick Sort" << endl << endl;
+	cout << "Введите номер одного из вариантов: ";
+
+	choosesort(arr);
+	/// Фибоначчи
+	if (arr.size() > 15)
+		size = 15;
+	else
+		size = arr.size();
+
+	for (int i = 0; i < size; i++)
+		if (fib(arr[i]) == 1)
+		{
+			arr_fib.push_back(arr[i]);
+		}
+	cout << endl << "Числа Фибоначчи, представленные в массиве";
+	print_array(arr_fib);
+	
+	// среднее значение значений массива
+	middle = (arr[0] + arr[arr.size() - 1]) / 2;
+	cout << endl << "Среднее значение значений массива = " << middle;
+	//медиана массива
+	middle_i = arr.size() / 2;
+	if (arr.size() % 2 == 0)
+	{
+		med = (arr[middle_i - 1] + arr[middle_i + 1]) / 2;
+	}
+	else
+		med = arr[middle_i];
+	cout << endl << "Медиана массива = " << med;
+
+	// мода массива
+	int max = arr[0];
+	int cmax = 0;
+	int rmax = 0;
+	for (int i = 0; i < arr.size(); i++) 
+	{
+		if (cmax > rmax) 
+		{
+			rmax = cmax;
+			max = arr[i - 1];
+		}
+		cmax = 0;
+		for (int j = i; j < arr.size(); j++)
+			if (arr[j] == arr[i])
+				cmax++;
+	}
+	//Вывод результатов поиска
+	cout << endl << "Мода массива = " << max << " Встречается в массиве " << rmax << "раз" << endl;
 
 	system("pause");
 	return;
@@ -379,6 +623,27 @@ void print_flag()
 		cout << endl;
 	}
 	SetColor(0, 7);
+
+	cout << "Флаг Российской Федерации " << endl << endl;
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			if (i <= 10)
+			{
+				SetColor(15, 15);// ,белая полоса
+				cout << flag[i][j] << " " << '\t';
+			}
+			else if (i <= 20)
+			{
+				SetColor(1, 1);// синия полоса
+				cout << flag[i][j] << " " << '\t';
+			}
+			else
+				SetColor(4, 4);// красная полоса
+			cout << flag[i][j] << " " << '\t';
+		}
+	}
 }
 
 void conf_val()
