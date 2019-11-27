@@ -435,37 +435,73 @@ void QuickSort(vector<int>& arr, int low, int high)
 
 void choosesort(vector<int>& arr)
 {
+	chrono::steady_clock sc;   // create an object of `steady_clock` class
+	double seconds; // переменная, которая хранит в себе время исполнения события
+
 	int m;
 	char value[256]; // переменная, которая хранит выбранное значение
 	cin >> value; // считываем выбранное значение
+
 	if (strlen(value) == 1) // проверяем количество введенных символов. Если много, то просим ввести еще раз, иначе проверям дальше
 	{
 		switch (value[0]) // проверям, взяв первый символ переменной value
 		{
 		case '1': // сортировка пузырьком
+		{
+			auto start = sc.now();     // устанавливаем начало отсчета времени события
 			BubbleSort(arr);
+			auto end = sc.now();       // устанавливаем конец отсчета времени события
+			auto time_span = static_cast<chrono::duration<double>>(end - start);   // высчитываем время, затраченное на событие
 			print_array(arr);
+			cout << "Время, затраченное на сортировку пузырьком: " << time_span.count() << " секунд" << endl;
 			break;
-
+		}
 		case '2': // сортировка шейкерная
+		{
+			auto start_1 = sc.now();     // устанавливаем начало отсчета времени события
 			ShakerSort(arr);
+			auto end_1 = sc.now();       // устанавливаем конец отсчета времени события
+			auto time_span_1 = static_cast<chrono::duration<double>>(end_1 - start_1);   // высчитываем время, затраченное на событие
 			print_array(arr);
+			cout << "Время, затраченное на шейкерную сортировку: " << time_span_1.count() << " секунд" << endl;
 			break;
+		}
 		case '3': // сортировка комбинированием
+		{
+			auto start_2 = sc.now();     // устанавливаем начало отсчета времени события
 			CombSort(arr);
+			auto end_2 = sc.now();       // устанавливаем конец отсчета времени события
+			auto time_span_2 = static_cast<chrono::duration<double>>(end_2 - start_2);   // высчитываем время, затраченное на событие
 			print_array(arr);
+			cout << "Время, затраченное на сортировку комбинированием: " << time_span_2.count() << " секунд" << endl;
 			break;
+		}
 		case '4': // сортировка вставками
+		{
+			auto start_3 = sc.now();     // устанавливаем начало отсчета времени события
 			InsertSort(arr);
+			auto end_3 = sc.now();       // устанавливаем конец отсчета времени события
+			auto time_span_3 = static_cast<chrono::duration<double>>(end_3 - start_3);   // высчитываем время, затраченное на событие
 			print_array(arr);
+			cout << "Время, затраченное на сортировку вставками: " << time_span_3.count() << " секунд" << endl;
 			break;
+		}
 		case '5': // сортировка быстрая
+		{
+			auto start_4 = sc.now();     // устанавливаем начало отсчета времени события
 			QuickSort(arr, 0, arr.size() - 1);
+			auto end_4 = sc.now();       // устанавливаем конец отсчета времени события
+			auto time_span_4 = static_cast<chrono::duration<double>>(end_4 - start_4);   // высчитываем время, затраченное на событие
 			print_array(arr);
+			cout << "Время, затраченное на быструю сортировку: " << time_span_4.count() << " секунд" << endl;
 			break;
+		}
 		default: // если число не подходит ни к одному из
+		{
 			cout << "Число введено неверно. Введите заново" << endl;
 			choosefill(arr);
+			break;
+		}
 		}
 	}
 	else // если введено символов больше необходимого
@@ -566,7 +602,7 @@ void work_array()
 				cmax++;
 	}
 	//Вывод результатов поиска
-	cout << endl << "Мода массива = " << max << " Встречается в массиве " << rmax << "раз" << endl;
+	cout << endl << "Мода массива = " << max << " Встречается в массиве " << rmax << " раз" << endl;
 
 	system("pause");
 	return;
@@ -624,7 +660,7 @@ void print_flag()
 	}
 	SetColor(0, 7);
 
-	cout << "Флаг Российской Федерации " << endl << endl;
+	cout << endl << "Флаг Российской Федерации " << endl << endl;
 	for (int i = 0; i < m; i++)
 	{
 		for (int j = 0; j < n; j++)
@@ -634,16 +670,20 @@ void print_flag()
 				SetColor(15, 15);// ,белая полоса
 				cout << flag[i][j] << " " << '\t';
 			}
-			else if (i <= 20)
+			else if (i <= 20 and i >= 11)
 			{
 				SetColor(1, 1);// синия полоса
 				cout << flag[i][j] << " " << '\t';
 			}
 			else
+			{
 				SetColor(4, 4);// красная полоса
-			cout << flag[i][j] << " " << '\t';
+				cout << flag[i][j] << " " << '\t';
+			}
 		}
+		cout << endl;
 	}
+	SetColor(0, 7);
 }
 
 void conf_val()
