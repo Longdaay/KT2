@@ -1,23 +1,35 @@
-#include <iostream>
-#include <Windows.h>
-#include <stdio.h>
-#include <conio.h>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <ctime>
-#include <chrono>
+// Интерактивное меню с пунктами (Регистрация, Вход, Приветствие, Работа с целочисленным массивом, Флаг)
+/*
+	В регистрации - ввод логина и пароля и дальнейшая запись в файл
+	В входе - ввод логина и пароля и дальнейшая проверка его с данными после регистрации (отдельная проверка по логину и по паролю - по заданию)
+	Приветствие - просто текст, который ориентирован на вводимый логин пользователя. Если пользователь не регистрировался, в приветствии будет обозначен, как "пользователь N". Дальше обычное
+	приветствие, где номер группы выводится в двоичной форме, так же и происходит с фамилией - по заданию
+	Работа с целочисленным массивом - построена на векторе, пользователю предоставляется выбор заполнения массива - самостоятельно, рандомно, через файл, а также предоставляется выбор из 5 сортировок Bubble, Shaker, Comb, Insert, Quick. 
+	После сортировки идет поиск 15 чисел Фибоначчи (если размерность меньше, то предел - размерность).
+	Для этих чисел создан отдельный вектор arr_fib(). После этого выводится среднее значение в массиве, медиана массива и мода.
+	В Флаге - флаги выполнены на векторах - флаг Панамы и флаг РФ. На разных ПК выглядят они по-разному.
+	Программа - по большей степени не оптимизирована и больше похожа на костыль.
+*/
+ 
+#include <iostream> // для ввода/вывода в консоль
+#include <Windows.h> // для изменения цвета в консоли
+#include <conio.h> // для меню (считывание символов напрямую из консоли без использования буфера и echo-вывода (getch(void))
+#include <vector> // для массивов
+#include <string> // для строковых переменных
+#include <fstream> // для потокового ввода/вывода из/в файл/а
+#include <ctime> // для рандома
+#include <chrono> // для подсчета времени выполнения сортировки
 
-using namespace std;
-const int NotUsed = system("color 70");
+using namespace std; // пространство имен std - для быстроты не стал каждой приписывать
+const int NotUsed = system("color 70"); // изменения цвета консоли в серый 
 
-int m_count = 0;
-int t_reg = 0;
-string user_name = "пользователь N";
-int qual = 32;
-int qual_ch = 8;
+int m_count = 0; // значения для меню - это значение изменяется при нажатии стрелок вверх или вниз
+int t_reg = 0; // параметр, который определяет прошел ли пользователь регистрацию перед выполнением приветствия
+string user_name = "пользователь N"; // если пользователь отказывается от регистрации, то имени присваивается эта строка
+int qual = 32; // количество бит, выделяемое на инт значение
+int qual_ch = 8; // количество бит, выделяемое на чар значение
 
-void menu_choice();
+void menu_choice(); // прототип меню
 
 void SetColor(int text, int bg) //Функция смены цвета, взятая из Интернета
 {
@@ -25,7 +37,7 @@ void SetColor(int text, int bg) //Функция смены цвета, взятая из Интернета
 	SetConsoleTextAttribute(hStdOut, (WORD)((bg << 4) | text));
 }
 
-int checkdigit()
+int checkdigit() // проверка числа на корректность ввода (отрицательные значения принимает)
 {
 	while (true)
 	{
@@ -46,12 +58,12 @@ int checkdigit()
 	}
 }
 
-void digit()
+void digit() // для получения номера группы в двоичной форме
 {
-	vector<int> revers_array(qual);
-	int dig = 9894;
-	bool result;
-	bool counter = false;
+	vector<int> revers_array(qual); // создаем вектор с необходимым размером
+	int dig = 9894; // указываем значению номер группы
+	bool result; // переменная, на вход получает каждый бит числа и заносит его в массив
+	bool counter = false; // параметр, который позволяет включить цвет для вывода значащих разрядов
 
 	for (int number_of_bit = 0; number_of_bit < qual; number_of_bit++) // номер бита для сдвига, сравниваем номер бита с допустимым значением диапазона массива, добавляем 1 после каждой итерации
 	{
@@ -71,33 +83,32 @@ void digit()
 			cout << revers_array[i]; //вывод значения бита
 		}
 	}
-	SetColor(0, 7);
+	SetColor(0, 7); // возвращаем цвет на серый
 }
-void ch_digit(int digit)
+void ch_digit(int digit) // для получения букв фамилии в двоичной форме
 {
-	vector<int> revers_array(qual_ch);
-	bool result;
-	bool counter = false;
+	vector<int> revers_array(qual_ch); // создаем вектор с необходимым размером
+	bool result; // переменная, на вход получает каждый бит числа и заносит его в массив
 
 	for (int number_of_bit = 0; number_of_bit < qual_ch; number_of_bit++) // номер бита для сдвига, сравниваем номер бита с допустимым значением диапазона массива, добавляем 1 после каждой итерации
 	{
 		result = digit & (1U << number_of_bit); // производим сдвиг числа и записываем бит в переменную
 		revers_array[number_of_bit] = result; // записываем в массив полученное значение 
 	}
-	for (int i = qual_ch - 1; i >= 0; i--)
+	for (int i = qual_ch - 1; i >= 0; i--) // выводим
 		cout << revers_array[i];
 	cout << " ";
 }
 
-void second_name()
+void second_name() // для получения фамилии в двоичной форме
 {
-	char ch;
-	string s_names = "Leushkin";
-	vector<char> s_name;
+	char ch; // инициализируем переменную чар
+	string s_names = "Leushkin"; // задаем строке фамилии
+	vector<char> s_name; // инициализируем вектор для каждой буквы фамилии
 
-	for (int i = 0; i < s_names.size(); i++)
+	for (int i = 0; i < s_names.size(); i++)// цикл для записи букв в массив
 		s_name.push_back(s_names[i]);
-	for (int i = 0; i < s_name.size(); i++)
+	for (int i = 0; i < s_name.size(); i++)// цикл для вывода каждой буквый фамилии в двоичной форме
 		ch_digit((int)(s_name[i]));
 
 }
@@ -132,56 +143,56 @@ int checkparam() // функция проверки выбранного действия
 	}
 }
 
-void registration()
+void registration() // пункт меню - регистрация
 {
-	system("cls");
-	ofstream fout;
-	string s1;
+	system("cls"); // очищаем консоль
+	ofstream fout; // инициализируем поток
+	string s1; // инициализируем строку 
 	cout << "Приветствую" << endl;
 	cout << "Введите имя пользователя: ";
-	fout.open("data.txt");
-	getline(cin, s1);
+	fout.open("data.txt"); // открываем файл для записи
+	getline(cin, s1); // считываем строку
 	fout << s1;
 	fout << '\n';
-	s1.clear();
+	s1.clear(); // очищаем переменную
 	cout << "Введите пароль: ";
-	getline(cin, s1);
+	getline(cin, s1); // считываем строку
 	fout << s1;
 	fout << '\n';
-	fout.close();
+	fout.close(); // закрываем файл после записи
 	cout << "Регистрация завершена, поздравляем!" << endl;
 	system("pause");
-	menu_choice();
+	menu_choice(); // возвращаемся в раздел меню
 }
 
-void sign()
+void sign() // пункт меню - вход
 {
-	system("cls");
-	fstream fin;
-	string c;
-	vector<char> password;
+	system("cls"); // очищаем консоль
+	fstream fin; // инициализируем входной поток
+	string c; // инициализируем строку
+	vector<char> password; // создаем вектор для пароля, что б при вводе можно было заменить вводимые символы на звездочки
 	char ch;
-	int param = 1;
-	fin.open("data.txt", ios::in);
-	fin.seekg(0, ios::beg);
-	fin >> c;
-	cout << "Вход" << endl;
+	int param = 1; // параметр для проверки правильности ввода логина/пароля
+	fin.open("data.txt", ios::in); // открываем поток для чтения
+	fin.seekg(0, ios::beg); // переносим указатель на начало файла
+	fin >> c; // считываем строку
+	cout << "Вход" << endl; 
 	cout << endl << "Введите имя пользователя: ";
 	cin >> user_name;
-	if (c != user_name)
+	if (c != user_name) // проверяем на корректность ввода логина
 	{
 		cout << "Пользователь не найден. Попробуйте ввести еще раз" << endl;
 		system("pause");
-		sign();
+		sign(); // заново просим выполнить вход полностью
 	}
-	fin >> c;
+	fin >> c; // считываем строку
 	cout << "Введите пароль: ";
-	while ((ch = _getch()) != '\r')
+	while ((ch = _getch()) != '\r')// каждый вводимый символ меняем на "*" до подтверждения ввода - к сожалению удалить символ в момент ввода не получится
 	{
-		password.push_back(ch);
-		_putch('*');
+		password.push_back(ch); // загоняем в массив
+		_putch('*'); // ставим * 
 	}
-	for (int i = 0; i < c.size(); i++)
+	for (int i = 0; i < c.size(); i++) // проверяем каждый символ строки и массива на корректность
 	{
 		if (c[i] != password[i])
 		{
@@ -189,42 +200,43 @@ void sign()
 			break;
 		}
 	}
-	if (param == 1)
+	if (param == 1) // если успешно
 	{
 		cout << endl << "Вход успешно выполнен!" << endl;
 		t_reg = 1;
 	}
-	else
+	else // иначе пароль не совпал
 	{
 		cout << endl << "Пароль не совпадает. Попробуйте ввести еще раз" << endl;
 		system("pause");
-		sign();
+		sign(); // заново просим выполнить вход полностью
 	}
-	fin.close();
+	fin.close(); // закрываем файл
 	system("pause");
+	menu_choice(); // возвращаемся в раздел меню
 }
 
-void say_hello()
+void say_hello() // Пункт меню - приветствие
 {
-	system("cls");
-	if (t_reg != 1)
+	system("cls"); // очищаем консоль
+	if (t_reg != 1) // есди вход не был выполнен, предлагаем зайти
 	{
 		cout << "Похоже, вы не произвели вход. Настоятельно рекомендуем это сделать?" << endl;
 		cout << "Перейти в раздел вход? (y/n) ";
-		if (checkparam() == 1)
+		if (checkparam() == 1) // если соглашается - входим
 			sign();
 	}
 	cout << "Приветствую тебя, " << user_name << "! Рад тебя видеть, проходи, присаживайся." << endl << endl;
 	cout << "Эту программу написал студент группы 9894 Леушкин Сергей. Кстати, в памяти моего компьютера номер моей группы выглядит как: ";
-	digit();
+	digit(); // двоичный вывод номера группы
 	cout << ", а Фамилия как ";
-	second_name();
+	second_name(); // двоичный вывод фамилии
 	cout << endl;
 	system("pause");
-
-	return;
+	
+	menu_choice(); // возвращаемся в раздел меню
 }
-void print_array(vector<int> arr)
+void print_array(vector<int> arr) // вывод массива
 {
 	cout << endl << "__Массив__" << endl;
 	for (int i = 0; i < arr.size(); i++)
@@ -273,7 +285,7 @@ void fill_mat_via_file(vector<int>& tab_2)
 
 }
 
-void choosefill(vector<int>& arr) // функция выбора заполнения матрицы
+void choosefill(vector<int>& arr) // функция выбора заполнения массива
 {
 	int m;
 	char value[256]; // переменная, которая хранит выбранное значение
@@ -307,14 +319,14 @@ void choosefill(vector<int>& arr) // функция выбора заполнения матрицы
 	}
 }
 
-void swap(int* first_p, int* second_p)
+void swap(int* first_p, int* second_p) // смена переменных между собой
 {
 	int temp = *first_p;
 	*first_p = *second_p;
 	*second_p = temp;
 }
 
-void BubbleSort(vector<int>& arr)
+void BubbleSort(vector<int>& arr) // пузырьковая сортировка
 {
 	int temp;
 	for (int i = 0; i < arr.size() - 1; i++)
@@ -325,7 +337,7 @@ void BubbleSort(vector<int>& arr)
 			}
 }
 
-void ShakerSort(vector<int>& arr)
+void ShakerSort(vector<int>& arr) // шейкерная сортировка
 {
 	int i, j, k;
 	int m = arr.size();
@@ -343,7 +355,7 @@ void ShakerSort(vector<int>& arr)
 	}
 }
 
-int getNextGap(int gap)
+int getNextGap(int gap) // для Comb Sort
 {
 	// Shrink gap by Shrink factor 
 	gap = (gap * 10) / 13;
@@ -353,7 +365,7 @@ int getNextGap(int gap)
 	return gap;
 }
 
-void CombSort(vector<int>& arr)
+void CombSort(vector<int>& arr) // сортировка комбинированием
 {
 	int gap = arr.size();
 
@@ -384,7 +396,7 @@ void CombSort(vector<int>& arr)
 	}
 }
 
-void InsertSort(vector<int>& arr)
+void InsertSort(vector<int>& arr) // сортировка вставками
 {
 	// сортируем массив вставками --  insertion sort
 	int min_value;	// переменная, принимающая минимальное значение минимальное значение
@@ -402,7 +414,7 @@ void InsertSort(vector<int>& arr)
 	}
 }
 
-int partition(vector<int> &arr, int low, int high)
+int partition(vector<int> &arr, int low, int high) // для QuickSort
 {
 	int pivot = arr[high];    // pivot
 	int i = (low - 1);
@@ -420,7 +432,7 @@ int partition(vector<int> &arr, int low, int high)
 	return (i + 1);
 }
 
-void QuickSort(vector<int>& arr, int low, int high)
+void QuickSort(vector<int>& arr, int low, int high) // быстрая сортировка
 {
 	if (low < high)
 	{
@@ -433,7 +445,7 @@ void QuickSort(vector<int>& arr, int low, int high)
 	}
 }
 
-void choosesort(vector<int>& arr)
+void choosesort(vector<int>& arr) // выбор сортировки
 {
 	chrono::steady_clock sc;   // create an object of `steady_clock` class
 	double seconds; // переменная, которая хранит в себе время исполнения события
@@ -510,7 +522,7 @@ void choosesort(vector<int>& arr)
 		choosefill(arr);
 	}
 }
-int fib(int digit)
+int fib(int digit) // поиск числа фибоначчи - "1" - если подходит, "0" - если не подходит
 {
 	int f1 = 1, f2 = 1, it = 2;
 	while (f2 < digit) {
@@ -524,23 +536,19 @@ int fib(int digit)
 	else
 		return -1;
 }
-void work_array()
+void work_array() // Пункт меню - Работа с целочисленным массивом
 {
-	system("cls");
-	vector<int> arr;
-	vector<int> arr_fib;
-	int size;
-	int n;
-	int middle, middle_i, med, mod;
-	int tmp;
-	int res = 0;
-	int max_index = 0;
-	int max_value = 0;
+	system("cls"); // очищаем консоль
+	vector<int> arr; // инициализирование массива для чисел
+	vector<int> arr_fib; // инициализирование массива для чисел Фибоначчи
+	int size; // размерность для Фибоначчи
+	int n; // размерность для массива
+	int middle, middle_i, med, mod; // среднее значение, серединное значение, медиана, мода
 
 	cout << "__Работа с целочисленным массивом__" << endl << endl;
 	cout << "Введите размерность массива (положительное число арабскими цифрами - пример: 10, 3, 5): ";
-	n = checkdigit();
-	arr.resize(n);
+	n = checkdigit(); // считываем проверяем значение
+	arr.resize(n); // изменяем размерность массива
 	cout << "Как Вы хотите заполнить данный массив:" << endl;
 	cout << "1 - Значения элементов будут заданы рандомно (кратны 20)" << endl;
 	cout << "2 - Самостоятельно заполнить значения элементов массива" << endl;
@@ -557,12 +565,12 @@ void work_array()
 	cout << "5 - Quick Sort" << endl << endl;
 	cout << "Введите номер одного из вариантов: ";
 
-	choosesort(arr);
+	choosesort(arr); // функция сортировки массива
 	/// Фибоначчи
-	if (arr.size() > 15)
+	if (arr.size() > 15) // если размер массива больше 15, ищем только из первых 15
 		size = 15;
 	else
-		size = arr.size();
+		size = arr.size(); // меньше - прогоняем по всему размеру массива
 
 	for (int i = 0; i < size; i++)
 		if (fib(arr[i]) == 1)
@@ -570,14 +578,14 @@ void work_array()
 			arr_fib.push_back(arr[i]);
 		}
 	cout << endl << "Числа Фибоначчи, представленные в массиве";
-	print_array(arr_fib);
+	print_array(arr_fib); // выводим массив чисел Фибоначчи
 	
 	// среднее значение значений массива
 	middle = (arr[0] + arr[arr.size() - 1]) / 2;
 	cout << endl << "Среднее значение значений массива = " << middle;
 	//медиана массива
 	middle_i = arr.size() / 2;
-	if (arr.size() % 2 == 0)
+	if (arr.size() % 2 == 0) // если четное - среднее между двумя средними , если нечетное - срединное значение
 	{
 		med = (arr[middle_i - 1] + arr[middle_i + 1]) / 2;
 	}
@@ -608,13 +616,13 @@ void work_array()
 	return;
 }
 
-void print_flag()
+void print_flag() // вывод флага
 {
-	system("cls");
-	unsigned int n = 10;
-	unsigned int m = 30;
-	vector<vector <int> > flag(m);
-	for (int i = 0; i < m; i++)
+	system("cls"); //очищаем консоль
+	unsigned int n = 10; // размерность столбцов
+	unsigned int m = 30; // размерность строк
+	vector<vector <int> > flag(m); // инициализация вектора
+	for (int i = 0; i < m; i++) // создаем матрицу
 	{
 		flag[i].resize(n);
 		for (int j = 0; j < n; j++)
@@ -658,7 +666,7 @@ void print_flag()
 		}
 		cout << endl;
 	}
-	SetColor(0, 7);
+	SetColor(0, 7); // возващаем цвет
 
 	cout << endl << "Флаг Российской Федерации " << endl << endl;
 	for (int i = 0; i < m; i++)
@@ -686,7 +694,7 @@ void print_flag()
 	SetColor(0, 7);
 }
 
-void conf_val()
+void conf_val() // выбор после подтверждения в зависимости от значения текущего
 {
 	switch (m_count)
 	{
@@ -714,13 +722,12 @@ void conf_val()
 	}
 }
 
-void menu()
+void menu() // меню
 {
-	system("cls");
+	system("cls"); // очищаем консоль
 
 	if (m_count == 0)
 	{
-		
 		cout.width(15);
 		cout << right << "__МЕНЮ__" << endl;
 		SetColor(5, 7);
@@ -732,7 +739,6 @@ void menu()
 		cout << "Флаг" << endl;
 		cout << "Выход" << endl;
 		menu_choice();
-
 	}
 	if (m_count == 1)
 	{
@@ -747,7 +753,6 @@ void menu()
 		cout << "Флаг" << endl;
 		cout << "Выход" << endl;
 		menu_choice();
-
 	}
 	if (m_count == 2)
 	{
@@ -762,7 +767,6 @@ void menu()
 		cout << "Флаг" << endl;
 		cout << "Выход" << endl;
 		menu_choice();
-
 	}
 	if (m_count == 3)
 	{
@@ -777,7 +781,6 @@ void menu()
 		cout << "Флаг" << endl;
 		cout << "Выход" << endl;
 		menu_choice();
-
 	}
 	if (m_count == 4)
 	{
@@ -792,7 +795,6 @@ void menu()
 		SetColor(0, 7);
 		cout << "Выход" << endl;
 		menu_choice();
-
 	}
 	if (m_count == 5)
 	{
@@ -807,15 +809,14 @@ void menu()
 		cout << "Выход" << endl;
 		SetColor(0, 7);
 		menu_choice();
-
 	}
 }
 
-void menu_choice()
+void menu_choice() // в зависимости от стрелок изменяем меню
 {
 	int k1;
-	k1 = _getch();
-	if (k1 == 0xE0)
+	k1 = _getch(); // получаем символ стрелки без вывода знака
+	if (k1 == 0xE0) // если стрелки
 	{
 		switch (k1)
 		{
@@ -860,9 +861,9 @@ void menu_choice()
 
 int main()
 {
-	setlocale(0, "");
+	setlocale(0, ""); // локализация
 
-	menu();
+	menu(); // меню
 	
 	cout << "Всего доброго!." << endl;
 
